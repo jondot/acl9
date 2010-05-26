@@ -1,6 +1,15 @@
 module Acl9
   module ModelExtensions
     module ForObject
+      def self.included(base)
+          base.extend(ClassMethods)
+      end
+      module ClassMethods
+        def find_by_role(role_name, user_id)
+          self.find(:all, :joins => "inner join roles on authorizable_id = "+class_name.constantize.table_name+".id inner join roles_users on role_id=roles.id", :conditions => ["roles.name=? AND Authorizable_type = '"+class_name+"' AND roles_users.user_id=?",role_name.to_s, user_id])
+        end
+      end
+
       ##
       # Role check.
       #
